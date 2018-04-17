@@ -266,8 +266,9 @@ class StyleTransformer {
         selector = selector.replace(SLOTTED_PAREN, (m, paren) => ` > ${paren}`);
       }
     }
-    selector = selector.replace(DIR_PAREN, (m, before, dir) =>
-      `[dir="${dir}"] ${before}, ${before}[dir="${dir}"]`);
+    if (selector.indexOf(':dir') > -1)
+      selector = selector.replace(DIR_PAREN, (m, before, dir) =>
+        `[dir="${dir}"] ${before}, ${before}[dir="${dir}"]`);
     return {value: selector, combinator, stop};
   }
 
@@ -279,35 +280,21 @@ class StyleTransformer {
 
   // :host(...) -> scopeName...
   _transformHostSelector(selector, hostScope) {
-    let m = selector.match(HOST_PAREN);
-    let paren = m && m[2].trim() || '';
-    if (paren) {
-      if (!paren[0].match(SIMPLE_SELECTOR_PREFIX)) {
-        // paren starts with a type selector
-        let typeSelector = paren.split(SIMPLE_SELECTOR_PREFIX)[0];
-        // if the type selector is our hostScope then avoid pre-pending it
-        if (typeSelector === hostScope) {
-          return paren;
-        // otherwise, this selector should not match in this scope so
-        // output a bogus selector.
-        } else {
-          return SELECTOR_NO_MATCH;
-        }
-      } else {
-        // make sure to do a replace here to catch selectors like:
-        // `:host(.foo)::before`
-        return selector.replace(HOST_PAREN, function(m, host, paren) {
-          return hostScope + paren;
-        });
-      }
-    // if no paren, do a straight :host replacement.
-    // TODO(sorvell): this should not strictly be necessary but
-    // it's needed to maintain support for `:host[foo]` type selectors
-    // which have been improperly used under Shady DOM. This should be
-    // deprecated.
-    } else {
-      return selector.replace(HOST, hostScope);
-    }
+      // ex :host
+      if (!selector.match(HOST_PAREN_FAST))
+        return selector.replace(HOST, hostScope);
+
+      // ex :host(.class)
+      const basicSelector = selector.replace(HOST_PAREN_BASIC, (m, paren) => hostScope + paren);
+      if (basicSelector !== selector)
+        return basicSelector;
+
+      // ex :host(custom-element .class)
+      const typedSelector = selector.replace(HOST_PAREN_TYPED, (m, paren) => paren.split(SIMPLE_SELECTOR_PREFIX)[0] === hostScope ? paren : SELECTOR_NO_MATCH);
+      if (typedSelector !== selector)
+        return typedSelector;
+
+      return selector.replace(HOST_PAREN_OTHER, (m, paren) => hostScope + paren);
   }
 
   /**
@@ -351,7 +338,10 @@ let SLOTTED_START = new RegExp(`^(${SLOTTED})`);
 // NOTE: this supports 1 nested () pair for things like
 // :host(:not([selected]), more general support requires
 // parsing which seems like overkill
-let HOST_PAREN = /(:host)(?:\(((?:\([^)(]*\)|[^)(]*)+?)\))/;
+let HOST_PAREN_FAST = /:host\s*?\(/;
+let HOST_PAREN_BASIC = /:host\s*\(\s*([[.:#*][^)(]+?)\s*\)/;
+let HOST_PAREN_TYPED = /:host\s*\(\s*([^[.:#*][^)(]+?)\s*\)(.*)/;
+let HOST_PAREN_OTHER = /:host\s*\(\s*(.+)\s*\)/;
 // similar to HOST_PAREN
 let SLOTTED_PAREN = /(?:::slotted)(?:\(((?:\([^)(]*\)|[^)(]*)+?)\))/;
 let DIR_PAREN = /(.*):dir\((?:(ltr|rtl))\)/;
