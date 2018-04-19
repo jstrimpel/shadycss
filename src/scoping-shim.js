@@ -18,7 +18,6 @@ import StyleProperties from './style-properties.js';
 import placeholderMap from './style-placeholder.js';
 import StyleInfo from './style-info.js';
 import StyleCache from './style-cache.js';
-import {flush as watcherFlush} from './document-watcher.js';
 import templateMap from './template-map.js';
 import * as ApplyShimUtils from './apply-shim-utils.js';
 import documentWait from './document-wait.js';
@@ -46,7 +45,7 @@ export default class ScopingShim {
     });
   }
   flush() {
-    watcherFlush();
+    // noop
   }
   _generateScopeSelector(name) {
     let id = this._scopeCounter[name] = (this._scopeCounter[name] || 0) + 1;

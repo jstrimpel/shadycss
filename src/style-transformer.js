@@ -132,7 +132,7 @@ class StyleTransformer {
   // (e.g. :host) to use the scoping selector.
   css(rules, scope, ext, callback) {
     let hostScope = this._calcHostScope(scope, ext);
-    scope = this._calcElementScope(scope);
+
     let self = this;
     return StyleUtil.toCssText(rules, function(/** StyleNode */rule) {
       if (!rule.isScoped) {
@@ -174,7 +174,7 @@ class StyleTransformer {
     // NOTE: save transformedSelector for subsequent matching of elements
     // against selectors (e.g. when calculating style properties)
     rule['selector'] = rule.transformedSelector =
-      this._transformRuleCss(rule, transformer, scope, hostScope);
+      `${scope || ''} ${this._transformRuleCss(rule, transformer, '', hostScope)}`;
   }
 
   /**
