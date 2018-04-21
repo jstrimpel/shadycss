@@ -1,6 +1,7 @@
 /** @typedef {{
  * styleElement: function(!HTMLElement),
  * styleSubtree: function(!HTMLElement, Object<string, string>=),
+ * defineTemplate: function(string, string, string),
  * prepareTemplate: function(!HTMLTemplateElement, string, string=),
  * styleDocument: function(Object<string, string>=),
  * getComputedStyleValue: function(!Element, string): string,
@@ -23,3 +24,5 @@ let ShadyCSSOptions; //eslint-disable-line no-unused-vars
 
 /** @type {(ShadyCSSInterface | ShadyCSSOptions | undefined)} */
 window.ShadyCSS;
+
+self.onmessage;

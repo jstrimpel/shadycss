@@ -26,6 +26,16 @@ if (window['ShadyCSS']) {
 window.ShadyCSS = {
   ScopingShim: scopingShim,
   /**
+   * @param {string} elementName
+   * @param {string} style
+   * @param {Object=} ast
+   */
+  defineTemplate(elementName, style, ast) {
+    scopingShim.flushCustomStyles();
+    scopingShim.defineTemplate(elementName, style, ast);
+  },
+
+  /**
    * @param {!HTMLTemplateElement} template
    * @param {string} elementName
    * @param {string=} elementExtends

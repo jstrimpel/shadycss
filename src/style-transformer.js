@@ -12,7 +12,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 import {StyleNode} from './css-parse.js'; // eslint-disable-line no-unused-vars
 import * as StyleUtil from './style-util.js';
-import {nativeShadow} from './style-settings.js';
+// import {nativeShadow} from './style-settings.js';
 
 /* Transforms ShadowDOM styling into ShadyDOM styling
 
@@ -35,6 +35,7 @@ import {nativeShadow} from './style-settings.js';
 
 */
 const SCOPE_NAME = 'style-scope';
+const nativeShadow = false; // TODO: find a better approach
 
 class StyleTransformer {
   get SCOPE_NAME() {

@@ -98,7 +98,8 @@ function debugify(entry) {
 const entrypoints = [
   'scoping-shim',
   'apply-shim',
-  'custom-style-interface'
+  'custom-style-interface',
+  'parser-worker'
 ]
 
 let closureTasks = entrypoints.map((e) => closurify(e));

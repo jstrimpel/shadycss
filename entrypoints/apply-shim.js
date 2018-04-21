@@ -147,7 +147,7 @@ if (!window.ShadyCSS || !window.ShadyCSS.ScopingShim) {
      */
     prepareTemplate(template, elementName, elementExtends) { // eslint-disable-line no-unused-vars
       applyShimInterface.flushCustomStyles();
-      applyShimInterface.prepareTemplate(template, elementName)
+      applyShimInterface.prepareTemplate(template, elementName);
     },
 
     /**

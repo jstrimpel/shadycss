@@ -68,6 +68,31 @@ export default class ScopingShim {
     return style.getAttribute('css-build') || '';
   }
   /**
+   * Create template using already prepared values
+   *
+   * @param {string} elementName
+   * @param {string} style
+   * @param {Object=} ast
+   */
+  defineTemplate(elementName, style, ast) {
+console.log('defineTemplate');
+console.log(ast);
+
+  	const ownPropertyNames = !nativeCssVariables ? StyleProperties.decorateStyles(ast) : [];
+  	const template = {
+	  	_prepared: true,
+	  	name: elementName,
+	  	content: style,
+	  	_cssBuild: '',
+	  	_style: style,
+	  	_ownPropertyNames: ownPropertyNames,
+	  	_styleAst: ast
+  	};
+
+  	templateMap[elementName] = template;
+  	StyleUtil.applyCss(style, elementName, null, placeholderMap[elementName]);
+  }
+  /**
    * Prepare the styling and template for the given element type
    *
    * @param {HTMLTemplateElement} template
@@ -449,6 +474,7 @@ export default class ScopingShim {
 /* exports */
 ScopingShim.prototype['flush'] = ScopingShim.prototype.flush;
 ScopingShim.prototype['prepareTemplate'] = ScopingShim.prototype.prepareTemplate;
+ScopingShim.prototype['defineTemplate'] = ScopingShim.prototype.defineTemplate;
 ScopingShim.prototype['styleElement'] = ScopingShim.prototype.styleElement;
 ScopingShim.prototype['styleDocument'] = ScopingShim.prototype.styleDocument;
 ScopingShim.prototype['styleSubtree'] = ScopingShim.prototype.styleSubtree;
