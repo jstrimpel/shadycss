@@ -75,9 +75,6 @@ export default class ScopingShim {
    * @param {Object=} ast
    */
   defineTemplate(elementName, style, ast) {
-console.log('defineTemplate');
-console.log(ast);
-
   	const ownPropertyNames = !nativeCssVariables ? StyleProperties.decorateStyles(ast) : [];
   	const template = {
 	  	_prepared: true,
