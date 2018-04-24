@@ -173,11 +173,7 @@ class StyleTransformer {
   _transformRule(rule, transformer, scope, hostScope) {
     // NOTE: save transformedSelector for subsequent matching of elements
     // against selectors (e.g. when calculating style properties)
-    let transformedRule = this._transformRuleCss(rule, transformer, '', hostScope);
-    if (!transformedRule.startsWith(hostScope || ''))
-      transformedRule = `${scope || ''} ${transformedRule}`;
-
-    rule['selector'] = rule.transformedSelector = transformedRule;
+    rule['selector'] = rule.transformedSelector = this._transformRuleCss(rule, transformer, scope, hostScope);
   }
 
   /**
@@ -192,7 +188,11 @@ class StyleTransformer {
     // because they are keyframe selectors, not element selectors.
     if (!StyleUtil.isKeyframesSelector(rule)) {
       for (let i=0, l=p$.length, p; (i<l) && (p=p$[i]); i++) {
-        p$[i] = transformer.call(this, p, scope, hostScope);
+        let transformedRule = transformer.call(this, p, '', hostScope);
+        if (!transformedRule.startsWith(hostScope || ''))
+          transformedRule = `${scope || ''} ${transformedRule}`;
+
+        p$[i] = transformedRule;
       }
     }
     return p$.join(COMPLEX_SELECTOR_SEP);
